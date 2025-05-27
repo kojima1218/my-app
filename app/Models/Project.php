@@ -15,4 +15,9 @@ class Project extends Model
         'description',
         'project_key',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

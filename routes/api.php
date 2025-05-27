@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\UserController;
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
@@ -20,3 +21,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/projects', [ProjectController::class, 'index']);
     Route::get('/projects/{id}', [ProjectController::class, 'show']);
 });
+
+Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+    Route::get('/user/status', [UserController::class, 'status']);
+});
+
+Route::middleware('auth:sanctum')->get('/user/status', [UserController::class, 'status']);
