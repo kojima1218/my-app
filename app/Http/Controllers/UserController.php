@@ -17,20 +17,67 @@ class UserController extends Controller
         ]);
     }
 
-    public function index()
+
+public function index(Request $request)
 {
     $user = auth()->user();
 
-    if (!$user) {
-        return response()->json(['error' => '認証されていません'], 401);
-    }
-
-    if ($user->role !== 'admin') {
+    if (!$user || $user->role !== 'admin') {
         return response()->json(['message' => '許可されていません'], 403);
     }
 
-    return response()->json(User::all());
+
+    $query = \App\Models\User::query();
+
+    if ($request->filled('name')) {
+        $query->where('name', 'like', '%' . $request->name . '%');
+    }
+
+    if ($request->filled('email')) {
+        $query->where('email', 'like', '%' . $request->email . '%');
+    }
+
+    if ($request->filled('role')) {
+        $query->where('role', $request->role);
+    }
+
+    return response()->json($query->paginate(10));
 }
+
+//     public function index(Request $request)
+// {
+//     $user = auth()->user();
+
+//     if (!$user) {
+//         return response()->json(['error' => '認証されていません'], 401);
+//     }
+
+//     if ($user->role !== 'admin') {
+//         return response()->json(['message' => '許可されていません'], 403);
+//     }
+//     // // クエリビルダを使用して条件検索
+//     $query = \App\Models\User::query();
+
+//     if ($request->filled('name')) {
+//         $query->where('name', 'like', '%' . $request->name . '%');
+//     }
+
+//     if ($request->filled('email')) {
+//         $query->where('email', 'like', '%' . $request->email . '%');
+//     }
+
+//     if ($request->filled('role')) {
+//         $query->where('role', $request->role);
+//     }
+
+//     // ページネーション（1ページ10件）
+//     $users = $query->paginate(10);
+
+//     // SQL確認
+//     dd($query->toSql(), $query->getBindings());
+
+//     return response()->json($users);
+// }
 
     public function store(Request $request)
 {

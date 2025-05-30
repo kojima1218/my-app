@@ -24,9 +24,15 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
 Route::middleware('auth:sanctum')->get('/user/status', [UserController::class, 'status']);
 
+
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('users', UserController::class);
 });
+
+
+
+
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('projects', ProjectController::class); // ← これだけでOK
