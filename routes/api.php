@@ -16,12 +16,6 @@ Route::post('/login', [AuthenticatedSessionController::class, 'store']);
 
 Route::middleware('auth:sanctum')->post('/logout', [AuthenticatedSessionController::class, 'destroy']);
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/projects', [ProjectController::class, 'store']);
-    Route::get('/projects', [ProjectController::class, 'index']);
-    Route::get('/projects/{id}', [ProjectController::class, 'show']);
-});
-
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/user/status', [UserController::class, 'status']);
 });
@@ -30,4 +24,8 @@ Route::middleware('auth:sanctum')->get('/user/status', [UserController::class, '
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('users', UserController::class);
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('projects', ProjectController::class); // ← これだけでOK
 });
