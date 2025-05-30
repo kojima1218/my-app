@@ -19,7 +19,13 @@ class UserController extends Controller
 
     public function index()
 {
-    if (auth()->user()->role !== 'admin') {
+    $user = auth()->user();
+
+    if (!$user) {
+        return response()->json(['error' => '認証されていません'], 401);
+    }
+
+    if ($user->role !== 'admin') {
         return response()->json(['message' => '許可されていません'], 403);
     }
 
@@ -42,7 +48,7 @@ class UserController extends Controller
         'name' => $request->name,
         'email' => $request->email,
         'password' => Hash::make($request->password),
-        'role' => $request->role ?? 'user',
+        
     ]);
 
     return response()->json($user, 201);

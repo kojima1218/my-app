@@ -11,6 +11,7 @@ class Project extends Model
 
     // 一括代入を許可するカラムを列挙
     protected $fillable = [
+        'user_id',  
         'name',
         'description',
         'project_key',
