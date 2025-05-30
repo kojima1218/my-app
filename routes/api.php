@@ -6,6 +6,8 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Auth\NewPasswordController;
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
@@ -29,3 +31,11 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('projects', ProjectController::class); // ← これだけでOK
 });
+
+// パスワードリセットメール送信
+Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
+    ->middleware('guest');
+
+// 新しいパスワードの設定
+Route::post('/reset-password', [NewPasswordController::class, 'store'])
+    ->middleware('guest');
