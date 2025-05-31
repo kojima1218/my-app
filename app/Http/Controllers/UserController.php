@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -133,5 +134,49 @@ public function index(Request $request)
 
     $user->delete();
     return response()->json(['message' => 'ユーザーを削除しました']);
+}
+
+public function restore($id)
+{
+    $auth = Auth::user();
+
+    // 論理削除されたユーザーを取得
+    $user = User::onlyTrashed()->findOrFail($id);
+
+        if ($auth->role !== 'admin') {
+        return response()->json(['message' => '許可されていません（管理者のみ復元可）'], 403);
+    }
+
+    $user->restore();
+
+    return response()->json(['message' => 'ユーザーを復元しました']);
+}
+
+public function trashed()
+{
+    $auth = Auth::user();
+
+    if ($auth->role !== 'admin') {
+        return response()->json(['message' => '許可されていません（管理者のみ閲覧可）'], 403);
+    }
+
+    return response()->json(User::onlyTrashed()->paginate(10));
+}
+
+public function forceDelete($id)
+{
+    $auth = Auth::user();
+
+    // 管理者以外は拒否
+    if ($auth->role !== 'admin') {
+        return response()->json(['message' => '許可されていません（管理者のみ完全削除可）'], 403);
+    }
+
+    // 論理削除済みのユーザーを取得
+    $user = User::onlyTrashed()->findOrFail($id);
+
+    $user->forceDelete();
+
+    return response()->json(['message' => 'ユーザーを完全に削除しました']);
 }
 }

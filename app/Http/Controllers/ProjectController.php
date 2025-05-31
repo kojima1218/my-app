@@ -85,4 +85,48 @@ public function destroy(Project $project)
 
     return response()->json(['message' => '削除しました']);
 }
+
+public function restore($id)
+{
+    $auth = Auth::user();
+
+    // 自分の削除済みプロジェクトを取得
+    $project = Project::onlyTrashed()->where('id', $id)->firstOrFail();
+
+    if ($auth->id !== $project->user_id) {
+        return response()->json(['message' => '許可されていません（自分のプロジェクトのみ復元可）'], 403);
+    }
+
+    $project->restore();
+
+    return response()->json(['message' => 'プロジェクトを復元しました']);
+}
+
+public function trashed()
+{
+    $auth = Auth::user();
+
+    return response()->json(
+        Project::onlyTrashed()
+            ->where('user_id', $auth->id)
+            ->paginate(10)
+    );
+}
+
+public function forceDelete($id)
+{
+    $auth = Auth::user();
+
+    // 自分の削除済みプロジェクトのみ許可
+    $project = Project::onlyTrashed()->where('id', $id)->firstOrFail();
+
+    if ($auth->id !== $project->user_id) {
+        return response()->json(['message' => '許可されていません（自分のプロジェクトのみ完全削除可）'], 403);
+    }
+
+    $project->forceDelete();
+
+    return response()->json(['message' => 'プロジェクトを完全に削除しました']);
+}
+
 }

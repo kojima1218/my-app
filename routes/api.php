@@ -45,3 +45,16 @@ Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
 // 新しいパスワードの設定
 Route::post('/reset-password', [NewPasswordController::class, 'store'])
     ->middleware('guest');
+
+
+Route::post('/users/{id}/restore', [UserController::class, 'restore'])->middleware('auth:sanctum');
+Route::post('/projects/{id}/restore', [ProjectController::class, 'restore'])->middleware('auth:sanctum');
+
+Route::get('/users/trashed', [UserController::class, 'trashed'])->middleware('auth:sanctum');
+Route::get('/projects/trashed', [UserController::class, 'trashed'])->middleware('auth:sanctum');
+
+Route::delete('/users/{id}/force', [UserController::class, 'forceDelete'])
+    ->middleware('auth:sanctum');
+
+Route::delete('/projects/{id}/force', [ProjectController::class, 'forceDelete'])
+    ->middleware('auth:sanctum');
